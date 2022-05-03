@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.in": "cpp"
+    },
+    "C_Cpp.clang_format_style": "Visual Studio"
+}

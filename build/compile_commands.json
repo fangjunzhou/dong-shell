@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/Users/fangjunzhou/Documents/CPP_Project/Dong-Shell/build",
+  "command": "/usr/local/bin/g++-11  -I/Users/fangjunzhou/Documents/CPP_Project/Dong-Shell/src -I/Users/fangjunzhou/Documents/CPP_Project/Dong-Shell/src/CMakeConfig -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk -o CMakeFiles/DongShell.dir/src/main.cpp.o -c /Users/fangjunzhou/Documents/CPP_Project/Dong-Shell/src/main.cpp",
+  "file": "/Users/fangjunzhou/Documents/CPP_Project/Dong-Shell/src/main.cpp"
+}
+]
