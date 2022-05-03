@@ -51,5 +51,10 @@ std::vector<std::string> &CommandHandler::SplitCommand(std::string command)
         }
     }
 
+    if (command.length() != 0)
+    {
+        commandList->push_back(command);
+    }
+
     return *commandList;
 }
