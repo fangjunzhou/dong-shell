@@ -22,7 +22,7 @@ int main(int, char **)
     while (true)
     {
         command.clear();
-        std::cout << "Dong Shell>";
+        std::cout << "Dong Shell> ";
         std::getline(std::cin, command);
         std::cout << "Command: " << command << std::endl;
         int res = CommandHandler::HandleCommand(command);
@@ -39,28 +39,26 @@ int main(int, char **)
         pid_t pid = fork();
         if (pid == 0)
         {
-            // Child Process
-            std::cout << "Child process executing: " << command << std::endl;
-
-            // TODO: Remove this debug print.
-            std::cout << "commandList: \n";
+            // Construct the arguments and path.
+            // Convert the std::vector<std::string> to char *[] on heap.
+            char **argv = new char *[commandList.size()];
             for (int i = 0; i < commandList.size(); i++)
             {
-                std::cout << commandList[i];
-                if (i != commandList.size() - 1)
+                argv[i] = (char *const)commandList[i].c_str();
+            }
+
+            if (commandList.size() > 0)
+            {
+                if (execv(commandList[0].c_str(), argv) == -1)
                 {
-                    std::cout << ", ";
+                    std::cout << "execv error.\n";
                 }
             }
-            std::cout << std::endl;
-
-            // TODO: Construct the arguments and path.
 
             exit(0);
         }
         // Wait for child process finished.
         waitpid(pid, NULL, 0);
-        std::cout << "Forked child process " << pid << std::endl;
 
         // Deallocating the vector
         delete &commandList;
