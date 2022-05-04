@@ -51,7 +51,8 @@ int main(int, char **)
             {
                 if (execv(commandList[0].c_str(), argv) == -1)
                 {
-                    std::cout << "execv error.\n";
+                    std::cout << "Dong Shell: execv error, no executable named "
+                              << commandList[0].c_str() << std::endl;
                 }
             }
 
