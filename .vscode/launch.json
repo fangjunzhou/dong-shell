@@ -5,7 +5,41 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dong Shell Basic Debug",
+            "name": "Dong Shell Basic Debug (Linux)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/DongShell",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Follow Fork Children",
+                    "text": "-gdb-set follow-fork-mode ${input:follow-fork-mode}",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "Set Fork",
+                    "text": "-gdb-set detach-on-fork off",
+                    "ignoreFailures": false
+                }
+            ]
+        },
+        {
+            "name": "Dong Shell Basic Debug (Mac)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/DongShell",
@@ -15,6 +49,14 @@
             "environment": [],
             "externalConsole": true,
             "MIMode": "lldb"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "follow-fork-mode",
+            "type": "promptString",
+            "description": "The follow-fork-mode settings",
+            "default": "parent"
         }
     ]
 }

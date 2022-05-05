@@ -6,7 +6,8 @@
 			"label": "Run Dong Shell Executable",
 			"command": [
 				"${workspaceFolder}/build/DongShell"
-			]
+			],
+			"group": "build"
 		}
 	]
 }
