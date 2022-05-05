@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 namespace CommandHandler
 {
@@ -22,6 +23,17 @@ namespace CommandHandler
      * @return std::vector<std::string> & an vector of strings.
      */
     std::vector<std::string> &SplitCommand(std::string command);
+
+    /**
+     * @brief Debug the command list info.
+     *
+     * @param command the original command in std::string.
+     * @param commandList the command list vector.
+     * @param argv the converted char *const *argv array.
+     * @param argc the argument count.
+     */
+    void DebugCommandList(std::string *command, std::vector<std::string> *commandList,
+                          char *const *argv, int argc);
 }
 
 #endif // __COMMANDHANDLER_H__

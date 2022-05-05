@@ -58,3 +58,40 @@ std::vector<std::string> &CommandHandler::SplitCommand(std::string command)
 
     return *commandList;
 }
+
+void CommandHandler::DebugCommandList(std::string *command, std::vector<std::string> *commandList,
+                                      char *const *argv, int argc)
+{
+    if (command != NULL)
+    {
+        std::cout << "Original command: " << *command << std::endl;
+    }
+
+    if (commandList != NULL)
+    {
+        std::cout << "Command list vector: ";
+        for (int i = 0; i < commandList->size(); i++)
+        {
+            std::cout << "\"" << (*commandList)[i] << "\"";
+            if (i != commandList->size() - 1)
+            {
+                std::cout << ", ";
+            }
+        }
+        std::cout << std::endl;
+    }
+
+    if (argv != NULL)
+    {
+        std::cout << "argv array: ";
+        for (int i = 0; i < argc; i++)
+        {
+            std::cout << "\"" << argv[i] << "\"";
+            if (i != argc - 1)
+            {
+                std::cout << ", ";
+            }
+        }
+        std::cout << std::endl;
+    }
+}
