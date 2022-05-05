@@ -41,18 +41,20 @@ int main(int, char **)
         {
             // Construct the arguments and path.
             // Convert the std::vector<std::string> to char *[] on heap.
-            char **argv = new char *[commandList.size()];
+            char **argv = new char *[commandList.size() + 1];
             for (int i = 0; i < commandList.size(); i++)
             {
                 argv[i] = (char *const)commandList[i].c_str();
             }
+            argv[commandList.size()] = NULL;
+
+            CommandHandler::DebugCommandList(&command, &commandList, argv, commandList.size());
 
             if (commandList.size() > 0)
             {
                 if (execv(commandList[0].c_str(), argv) == -1)
                 {
-                    std::cout << "Dong Shell: execv error, no executable named "
-                              << commandList[0].c_str() << std::endl;
+                    std::cout << "Dong Shell: execv error.\n";
                 }
             }
 
