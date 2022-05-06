@@ -1,0 +1,3 @@
+[submodule "packages/eventpp"]
+	path = packages/eventpp
+	url = git@github.com:wqking/eventpp.git
