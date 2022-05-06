@@ -81,7 +81,15 @@
         "variant": "cpp",
         "__functional_base": "cpp",
         "stop_token": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "any": "cpp",
+        "csignal": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "regex": "cpp",
+        "set": "cpp",
+        "future": "cpp",
+        "shared_mutex": "cpp"
     },
     "C_Cpp.clang_format_style": "Visual Studio"
 }

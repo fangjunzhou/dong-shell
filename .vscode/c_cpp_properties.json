@@ -4,7 +4,8 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/src/CMakeConfig"
+                "${workspaceFolder}/src/CMakeConfig",
+                "${workspaceFolder}/packages/eventpp/include/eventpp"
             ],
             "defines": [],
             "macFrameworkPath": [],

@@ -11,20 +11,24 @@
 #include <unistd.h>
 
 #include "config.h"
+#include "callbacklist.h"
 #include "CommandHandler/CommandHandler.hpp"
 
 struct winsize winSize;
+eventpp::CallbackList<void(int width, int height)> terminalResizeCallback;
 
 void SIGWINCH_Handler(int sigNum)
 {
     if (sigNum == SIGWINCH)
     {
         ioctl(STDOUT_FILENO, TIOCGWINSZ, &winSize);
-        std::cout << "New width: " << winSize.ws_col << std::endl;
-        std::cout << "New height: " << winSize.ws_row << std::endl;
+        // std::cout << "New width: " << winSize.ws_col << std::endl;
+        // std::cout << "New height: " << winSize.ws_row << std::endl;
+
+        // Call the resize callback.
+        terminalResizeCallback(winSize.ws_col, winSize.ws_row);
     }
 }
-
 
 int main(int, char **)
 {
@@ -38,6 +42,12 @@ int main(int, char **)
 
     // Register SIGWINCH signal
     signal(SIGWINCH, SIGWINCH_Handler);
+
+    // Register a sample callback.
+    terminalResizeCallback.append([](int width, int height)
+                                  {
+        std::cout << "New callback width: " << width << std::endl;
+        std::cout << "New callback height: " << height << std::endl; });
 
     std::string command;
 
