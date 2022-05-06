@@ -1,20 +1,43 @@
 #include <iostream>
 #include <fstream>
+#include <csignal>
 
 #include <string>
 #include <vector>
 
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 #include "config.h"
 #include "CommandHandler/CommandHandler.hpp"
 
+struct winsize winSize;
+
+void SIGWINCH_Handler(int sigNum)
+{
+    if (sigNum == SIGWINCH)
+    {
+        ioctl(STDOUT_FILENO, TIOCGWINSZ, &winSize);
+        std::cout << "New width: " << winSize.ws_col << std::endl;
+        std::cout << "New height: " << winSize.ws_row << std::endl;
+    }
+}
+
+
 int main(int, char **)
 {
     // Print version.
     std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
+
+    // Getting the console width and height.
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &winSize);
+    std::cout << "Width: " << winSize.ws_col << std::endl;
+    std::cout << "Height: " << winSize.ws_row << std::endl;
+
+    // Register SIGWINCH signal
+    signal(SIGWINCH, SIGWINCH_Handler);
 
     std::string command;
 
