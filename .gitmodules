@@ -1,3 +1,6 @@
 [submodule "packages/eventpp"]
 	path = packages/eventpp
 	url = git@github.com:wqking/eventpp.git
+[submodule "packages/catch2"]
+	path = packages/catch2
+	url = git@github.com:catchorg/Catch2.git
