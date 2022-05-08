@@ -11,11 +11,21 @@
 		},
 		{
 			"type": "shell",
-			"label": "Build and Run Tests",
+			"label": "Build and Run Tests (Show Success)",
 			"command": [
 				"cd ${workspaceFolder}/build;",
 				"make tests;",
 				"./tests -s;"
+			],
+			"group": "test"
+		},
+		{
+			"type": "shell",
+			"label": "Build and Run Tests (Show Fail Only)",
+			"command": [
+				"cd ${workspaceFolder}/build;",
+				"make tests;",
+				"./tests;"
 			],
 			"group": "test"
 		}
