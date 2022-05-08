@@ -15,7 +15,7 @@
 			"command": [
 				"cd ${workspaceFolder}/build;",
 				"make tests;",
-				"./tests;"
+				"./tests -s;"
 			],
 			"group": "test"
 		}

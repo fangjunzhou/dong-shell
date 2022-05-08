@@ -21,8 +21,8 @@ enable_testing()
 
 # Main executable.
 add_executable(DongShell src/main.cpp)
-target_link_libraries(DongShell PRIVATE CommandHandler)
-target_link_libraries(DongShell PRIVATE ShellDisplay)
+target_link_libraries(DongShell PUBLIC CommandHandler)
+target_link_libraries(DongShell PUBLIC ShellDisplay)
 
 # Catch test framework
 find_package(Catch2 3 REQUIRED)
