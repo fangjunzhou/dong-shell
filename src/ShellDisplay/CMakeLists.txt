@@ -1,1 +1,1 @@
-add_library(ShellDisplay STATIC ShellDisplay.cpp ShellDisplay.hpp)
+add_library(ShellDisplay STATIC ShellDisplay.hpp ShellDisplay.cpp)

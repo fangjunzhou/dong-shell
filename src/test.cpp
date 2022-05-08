@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "ShellDisplay/ShellDisplay.hpp"
+#include "ShellDisplay.hpp"
 
 TEST_CASE("DisplayBuffer Constructor and Destructor", "[DisplayBuffer]")
 {

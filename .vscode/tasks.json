@@ -8,6 +8,16 @@
 				"${workspaceFolder}/build/DongShell"
 			],
 			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "Build and Run Tests",
+			"command": [
+				"cd ${workspaceFolder}/build;",
+				"make tests;",
+				"./tests;"
+			],
+			"group": "test"
 		}
 	]
 }
