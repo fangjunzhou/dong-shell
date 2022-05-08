@@ -1,0 +1,1 @@
+add_library(CommandHandler CommandHandler.cpp CommandHandler.hpp)

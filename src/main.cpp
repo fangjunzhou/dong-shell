@@ -12,7 +12,8 @@
 
 #include "config.h"
 #include "callbacklist.h"
-#include "CommandHandler/CommandHandler.hpp"
+#include "CommandHandler.hpp"
+#include "ShellDisplay.hpp"
 
 struct winsize winSize;
 eventpp::CallbackList<void(int width, int height)> terminalResizeCallback;
@@ -40,6 +41,9 @@ int main(int, char **)
 
     // Register SIGWINCH signal
     signal(SIGWINCH, SIGWINCH_Handler);
+
+    // Init display buffer
+    DisplayBuffer<int> buffer = DisplayBuffer<int>({10, 10});
 
     std::string command;
 
