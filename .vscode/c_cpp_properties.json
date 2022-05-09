@@ -10,7 +10,9 @@
             "defines": [],
             "macFrameworkPath": [],
             "intelliSenseMode": "macos-gcc-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "cppStandard": "c++11",
+            "cStandard": "c11"
         }
     ],
     "version": 4

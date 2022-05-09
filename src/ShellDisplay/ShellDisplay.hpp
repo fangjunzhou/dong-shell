@@ -1,5 +1,6 @@
 #ifndef __SHELLDISPLAY_H__
 #define __SHELLDISPLAY_H__
+#pragma once
 #include <stdexcept>
 
 struct BufferSize
@@ -78,5 +79,7 @@ public:
      */
     T ReadBuffer(int x, int y);
 };
+
+#include "ShellDisplay.tpp"
 
 #endif // __SHELLDISPLAY_H__

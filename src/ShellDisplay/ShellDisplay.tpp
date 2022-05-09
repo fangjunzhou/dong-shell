@@ -1,4 +1,4 @@
-#include "ShellDisplay.hpp"
+#pragma once
 
 #pragma region Constructor and Destructor
 
@@ -89,12 +89,5 @@ T DisplayBuffer<T>::ReadBuffer(int x, int y)
     }
     return m_buffer[x][y];
 }
-
-#pragma endregion
-
-#pragma region Template Instance
-
-template class DisplayBuffer<int>;
-template class DisplayBuffer<char>;
 
 #pragma endregion

@@ -6,11 +6,17 @@ configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/CMakeConfig/config.h)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/CMakeConfig)
 
 # CommandHandler
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/CommandHandler)
+list(APPEND EXT_SOURCES
+${CMAKE_CURRENT_SOURCE_DIR}/src/CommandHandler/CommandHandler.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/src/CommandHandler/CommandHandler.hpp
+)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/CommandHandler)
 
 # ShellDisplay
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay)
+list(APPEND EXT_SOURCES
+${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay/ShellDisplay.tpp
+${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay/ShellDisplay.hpp
+)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay)
 
 # eventpp
@@ -20,16 +26,12 @@ include(CTest)
 enable_testing()
 
 # Main executable.
-add_executable(DongShell src/main.cpp)
-target_link_libraries(DongShell PUBLIC CommandHandler)
-target_link_libraries(DongShell PUBLIC ShellDisplay)
+add_executable(DongShell src/main.cpp ${EXT_SOURCES})
 
 # Catch test framework
 find_package(Catch2 3 REQUIRED)
 # These tests can use the Catch2-provided main
-add_executable(tests src/test.cpp)
-target_link_libraries(tests PUBLIC CommandHandler)
-target_link_libraries(tests PUBLIC ShellDisplay)
+add_executable(tests src/test.cpp ${EXT_SOURCES})
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 
 # eventpp
