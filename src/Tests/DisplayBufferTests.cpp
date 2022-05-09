@@ -56,3 +56,12 @@ TEST_CASE("Display Buffer Update Buffer Size", "[DisplayBuffer]")
         REQUIRE(size.height == 16);
     }
 }
+
+TEST_CASE("Buffer Read and Write", "[DisplayBuffer]")
+{
+    DisplayBuffer<int> buffer = DisplayBuffer<int>({2, 4});
+
+    buffer.SetBuffer(0, 1, 128);
+    REQUIRE(buffer.ReadBuffer(0, 1) == 128);
+    REQUIRE(buffer.GetBuffer()[0][1] == 128);
+}
