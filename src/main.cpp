@@ -13,7 +13,7 @@
 #include "config.h"
 #include "callbacklist.h"
 #include "CommandHandler.hpp"
-#include "ShellDisplay.hpp"
+#include "DisplayBuffer.hpp"
 
 struct winsize winSize;
 eventpp::CallbackList<void(int width, int height)> terminalResizeCallback;
