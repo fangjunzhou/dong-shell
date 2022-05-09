@@ -10,10 +10,11 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#include "config.h"
 #include "callbacklist.h"
+
+#include "config.h"
 #include "CommandHandler.hpp"
-#include "DisplayBuffer.hpp"
+#include "VerticalDisplay.hpp"
 
 struct winsize winSize;
 eventpp::CallbackList<void(int width, int height)> terminalResizeCallback;
@@ -42,8 +43,8 @@ int main(int, char **)
     // Register SIGWINCH signal
     signal(SIGWINCH, SIGWINCH_Handler);
 
-    // Init display buffer
-    DisplayBuffer<int> buffer = DisplayBuffer<int>({10, 10});
+    // Init VerticleDisplay
+    VerticalDisplay display = VerticalDisplay(&terminalResizeCallback, {winSize.ws_col, winSize.ws_row});
 
     std::string command;
 
