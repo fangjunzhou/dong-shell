@@ -70,6 +70,13 @@ public:
     void SetBuffer(int x, int y, T value);
 
     /**
+     * @brief Get the buffer pointer directly.
+     *
+     * @return T** the pointer to buffer 2D array.
+     */
+    T **GetBuffer();
+
+    /**
      * @brief Read the value in the buffer.
      *
      * @param x the x cooridnate of the buffer.
@@ -80,6 +87,6 @@ public:
     T ReadBuffer(int x, int y);
 };
 
-#include "ShellDisplay.tpp"
+#include "DisplayBuffer.tpp"
 
 #endif // __SHELLDISPLAY_H__

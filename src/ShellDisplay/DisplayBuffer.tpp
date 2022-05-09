@@ -59,8 +59,8 @@ void DisplayBuffer<T>::SetBufferSize(BufferSize size)
     {
         throw std::invalid_argument("Width or height less than 0.");
     }
-    m_size = size;
     DeallocateBuffer();
+    m_size = size;
     AllocateBuffer(size.width, size.height);
 }
 
@@ -78,6 +78,12 @@ void DisplayBuffer<T>::SetBuffer(int x, int y, T value)
         throw std::out_of_range("x or y coordinate out of range");
     }
     m_buffer[x][y] = value;
+}
+
+template <class T>
+T **DisplayBuffer<T>::GetBuffer()
+{
+    return m_buffer;
 }
 
 template <class T>
