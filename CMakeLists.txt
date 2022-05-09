@@ -14,8 +14,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/CommandHandler)
 
 # ShellDisplay
 list(APPEND EXT_SOURCES
-${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay/ShellDisplay.tpp
-${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay/ShellDisplay.hpp
+${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay/DisplayBuffer.tpp
+${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay/DisplayBuffer.hpp
 )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay)
 

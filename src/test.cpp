@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "ShellDisplay.hpp"
+#include "DisplayBuffer.hpp"
 
 TEST_CASE("DisplayBuffer Constructor and Destructor", "[DisplayBuffer]")
 {
@@ -35,5 +35,24 @@ TEST_CASE("DisplayBuffer Constructor and Destructor", "[DisplayBuffer]")
         {
             SUCCEED("Successfully throw exception.");
         }
+    }
+}
+
+TEST_CASE("Display Buffer Update Buffer Size", "[DisplayBuffer]")
+{
+    DisplayBuffer<int> buffer = DisplayBuffer<int>({2, 4});
+    SECTION("Get Buffer Size")
+    {
+        BufferSize size = buffer.GetBufferSize();
+        REQUIRE(size.width == 2);
+        REQUIRE(size.height == 4);
+    }
+
+    SECTION("Buffer Resize")
+    {
+        buffer.SetBufferSize({8, 16});
+        BufferSize size = buffer.GetBufferSize();
+        REQUIRE(size.width == 8);
+        REQUIRE(size.height == 16);
     }
 }
