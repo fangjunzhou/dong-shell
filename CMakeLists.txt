@@ -22,7 +22,7 @@ list(APPEND EXT_SOURCES ${COMMAND_HANDLER})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/CommandHandler)
 
 # ShellDisplay
-FILELIST(SHELL_DISPLAY ${CMAKE_CURRENT_SOURCE_DIR}/src/CommandHandler)
+FILELIST(SHELL_DISPLAY ${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay)
 list(APPEND EXT_SOURCES ${SHELL_DISPLAY})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/ShellDisplay)
 
@@ -48,9 +48,9 @@ target_link_libraries(Tests PRIVATE Catch2::Catch2WithMain)
 # eventpp
 find_package(eventpp)
 if(eventpp_FOUND)
-    target_link_libraries(DongShell PUBLIC eventpp::eventpp)
+  target_link_libraries(DongShell PUBLIC eventpp::eventpp)
 else(eventpp_FOUND)
-    message(FATAL_ERROR "eventpp library is not found")
+  message(FATAL_ERROR "eventpp library is not found")
 endif(eventpp_FOUND)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
