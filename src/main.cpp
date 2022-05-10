@@ -61,6 +61,10 @@ int main(int, char **)
             std::cerr << "CommandHandler error\n";
             exit(1);
         }
+        else if (res == 1)
+        {
+            continue;
+        }
 
         // Split the command.
         std::vector<std::string> &commandList = CommandHandler::SplitCommand(command);
