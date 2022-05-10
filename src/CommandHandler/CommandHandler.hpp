@@ -11,7 +11,7 @@ namespace CommandHandler
      * @brief Process the reserved command.
      *
      * @param command the string command pass to the handler.
-     * @return int -1 if fail, 0 if success.
+     * @return int -1 if fail, 0 if no action, 1 if success.
      */
     int HandleCommand(const std::string &command);
 

@@ -8,6 +8,12 @@ int CommandHandler::HandleCommand(const std::string &command)
         exit(0);
     }
 
+    if (command == "clear")
+    {
+        std::cout << "\033[2J \033[H";
+        return 1;
+    }
+
     return 0;
 }
 
