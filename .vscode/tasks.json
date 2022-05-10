@@ -3,19 +3,37 @@
 	"tasks": [
 		{
 			"type": "shell",
+			"label": "Compile Dong Shell",
+			"command": [
+				"cd ${workspaceFolder}/build;",
+				"make"
+			],
+			"group": "build"
+		},
+		{
+			"type": "shell",
 			"label": "Run Dong Shell Executable",
 			"command": [
 				"${workspaceFolder}/build/DongShell"
 			],
-			"group": "build"
+			"group": "none"
+		},
+		{
+			"type": "shell",
+			"label": "List Tests",
+			"command": [
+				"cd ${workspaceFolder}/build;",
+				"./Tests --list-tests"
+			],
+			"group": "test"
 		},
 		{
 			"type": "shell",
 			"label": "Build and Run Tests (Show Success)",
 			"command": [
 				"cd ${workspaceFolder}/build;",
-				"make tests;",
-				"./tests -s;"
+				"make Tests;",
+				"./Tests -s ${input:test-tag};"
 			],
 			"group": "test"
 		},
@@ -24,10 +42,17 @@
 			"label": "Build and Run Tests (Show Fail Only)",
 			"command": [
 				"cd ${workspaceFolder}/build;",
-				"make tests;",
-				"./tests;"
+				"make Tests;",
+				"./Tests ${input:test-tag};"
 			],
 			"group": "test"
+		}
+	],
+	"inputs": [
+		{
+			"id": "test-tag",
+			"type": "promptString",
+			"description": "The tag of tests",
 		}
 	]
 }
