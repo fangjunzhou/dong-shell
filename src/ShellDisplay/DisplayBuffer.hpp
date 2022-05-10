@@ -37,10 +37,19 @@ public:
     /**
      * @brief Construct a new Display Buffer object
      *
-     * @param size
+     * @param size the size of the buffer.
      * @throws std::invalid_argument when width or height is less than 0.
      */
     DisplayBuffer(BufferSize size);
+
+    /**
+     * @brief Construct a new Display Buffer object with initialize value.
+     *
+     * @param size the size of the buffer.
+     * @param initVal the initialization value.
+     * @throws std::invalid_argument when width or height is less than 0.
+     */
+    DisplayBuffer(BufferSize size, T initVal);
 
     ~DisplayBuffer();
 
@@ -68,6 +77,13 @@ public:
      * @throws std::out_of_range when x or y is out of range.
      */
     void SetBuffer(int x, int y, T value);
+
+    /**
+     * @brief Reset the buffer to a default value.
+     *
+     * @param value the default value of the buffer.
+     */
+    void ResetBuffer(T value);
 
     /**
      * @brief Get the buffer pointer directly.

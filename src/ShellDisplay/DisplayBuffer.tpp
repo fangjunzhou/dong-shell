@@ -14,6 +14,12 @@ DisplayBuffer<T>::DisplayBuffer(BufferSize size)
 }
 
 template <class T>
+DisplayBuffer<T>::DisplayBuffer(BufferSize size, T initVal) : DisplayBuffer<T>::DisplayBuffer(size)
+{
+    ResetBuffer(initVal);
+}
+
+template <class T>
 DisplayBuffer<T>::~DisplayBuffer()
 {
     DeallocateBuffer();
@@ -78,6 +84,18 @@ void DisplayBuffer<T>::SetBuffer(int x, int y, T value)
         throw std::out_of_range("x or y coordinate out of range");
     }
     m_buffer[x][y] = value;
+}
+
+template <class T>
+void DisplayBuffer<T>::ResetBuffer(T value)
+{
+    for (int x = 0; x < m_size.width; x++)
+    {
+        for (int y = 0; y < m_size.height; y++)
+        {
+            m_buffer[x][y] = value;
+        }
+    }
 }
 
 template <class T>
