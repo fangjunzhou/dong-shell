@@ -75,6 +75,12 @@ private:
     int m_displayLines;
 
     /**
+     * @brief The space between two vertical lines.
+     *
+     */
+    int m_lineSpace;
+
+    /**
      * @brief The position of veirtual cursor.
      *
      */
@@ -102,7 +108,13 @@ private:
     void OnConsoleResize(int width, int height);
 
 public:
-    VerticalDisplay(eventpp::CallbackList<void(int width, int height)> *consoleResizeCallback, BufferSize size);
+    VerticalDisplay(eventpp::CallbackList<void(int width, int height)> *consoleResizeCallback,
+                    BufferSize size);
+
+    VerticalDisplay(eventpp::CallbackList<void(int width, int height)> *consoleResizeCallback,
+                    BufferSize size,
+                    int lineSpace);
+
     ~VerticalDisplay();
 
     /**

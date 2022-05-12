@@ -5,7 +5,9 @@
 
 #pragma region Constructor and Destructor
 
-VerticalDisplay::VerticalDisplay(eventpp::CallbackList<void(int width, int height)> *consoleResizeCallback, BufferSize size)
+VerticalDisplay::VerticalDisplay(eventpp::CallbackList<void(int width, int height)> *consoleResizeCallback,
+                                 BufferSize size,
+                                 int lineSpace)
 {
     // Register callback
     m_consoleResizeEvent = consoleResizeCallback;
@@ -15,17 +17,19 @@ VerticalDisplay::VerticalDisplay(eventpp::CallbackList<void(int width, int heigh
                                                              { OnConsoleResize(width, height); });
     }
 
-    m_consoleSize = size;
+    m_lineSpace = lineSpace;
+    m_consoleSize = {size.width / lineSpace, size.height};
 
     // Init DisplayBuffer
-    m_charBuffer = new DisplayBuffer<char>(size, ' ');
-    m_flushBitmap = new DisplayBuffer<bool>(size, true);
+    m_charBuffer = new DisplayBuffer<char>(m_consoleSize, ' ');
+    m_flushBitmap = new DisplayBuffer<bool>(m_consoleSize, true);
 
     // Set the virtual cursor to (width - 1, 0)
-    m_virtualCursorPos = {size.width - 1, 0};
+    m_virtualCursorPos = {m_consoleSize.width - 1, 0};
 
     // Set history buffer head.
     m_bufferHead = m_historyBuffer;
+    m_displayHead = m_historyBuffer;
     m_bufferTail = m_historyBuffer;
 
     // Clear the history buffer.
@@ -34,6 +38,13 @@ VerticalDisplay::VerticalDisplay(eventpp::CallbackList<void(int width, int heigh
         m_historyBuffer[i] = '\0';
     }
     m_historyLines = 0;
+}
+
+VerticalDisplay::VerticalDisplay(eventpp::CallbackList<void(int width, int height)> *consoleResizeCallback,
+                                 BufferSize size) : VerticalDisplay(consoleResizeCallback,
+                                                                    size,
+                                                                    1)
+{
 }
 
 VerticalDisplay::~VerticalDisplay()
@@ -88,7 +99,7 @@ void VerticalDisplay::Flush()
             if (!m_flushBitmap->GetBuffer()[x][y])
                 continue;
             // Move cursor.
-            std::cout << MOVE_CURSOR(x, y + 1);
+            std::cout << MOVE_CURSOR(x * m_lineSpace, y + 1);
             std::cout << m_charBuffer->GetBuffer()[x][y];
             // Make bitmap cold.
             m_flushBitmap->SetBuffer(x, y, false);
@@ -126,9 +137,9 @@ void VerticalDisplay::PushString(std::string str)
 
         // Push the buffer head.
         if (m_bufferTail == m_bufferHead)
-            m_bufferHead++;
+            m_bufferHead = m_historyBuffer + (m_bufferHead - m_historyBuffer + 1) % k_historyBufferSize;
         if (m_bufferTail == m_displayHead)
-            m_displayHead++;
+            m_displayHead = m_historyBuffer + (m_displayHead - m_historyBuffer + 1) % k_historyBufferSize;
     }
 
     // TODO: Append new chars to the buffer to optimize performance.

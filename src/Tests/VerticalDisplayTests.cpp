@@ -53,7 +53,32 @@ TEST_CASE("VerticalDisplay Push String", "[VerticalDisplay]")
     DisplayDebugInfo(11, 0, "PushString()");
     std::cin.get();
     display.PushString("Hello World!\n");
-    display.PushString("你好世界！\n");
+    display.PushString("Hello World2!\n");
+    display.PushString("Hello World3!\n");
+
+    DisplayDebugInfo(11, 0, "Flush()");
+    std::cin.get();
+    display.Flush();
+
+    DisplayDebugInfo(11, 0, "ClearDisplay()");
+    std::cin.get();
+    display.ClearDisplay();
+}
+
+TEST_CASE("VerticalDisplay Push String Space", "[VerticalDisplay]")
+{
+    std::cout << "\033[2J";
+    VerticalDisplay display = VerticalDisplay(NULL, {10, 10}, 2);
+
+    DisplayDebugInfo(11, 0, "ClearDisplay()");
+    std::cin.get();
+    display.ClearDisplay();
+
+    DisplayDebugInfo(11, 0, "PushString()");
+    std::cin.get();
+    display.PushString("Hello World!\n");
+    display.PushString("Hello World2!\n");
+    display.PushString("Hello World3!\n");
 
     DisplayDebugInfo(11, 0, "Flush()");
     std::cin.get();
