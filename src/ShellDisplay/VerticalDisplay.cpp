@@ -67,8 +67,26 @@ VerticalDisplay::~VerticalDisplay()
 void VerticalDisplay::OnConsoleResize(int width, int height)
 {
     // Reset the console size.
-    m_consoleSize.width = width;
-    m_consoleSize.height = height;
+    m_consoleSize = {width / m_lineSpace, height};
+
+    // Resize the buffer
+    m_charBuffer->SetBufferSize(m_consoleSize);
+    m_flushBitmap->SetBufferSize(m_consoleSize);
+
+    // Set the virtual cursor to (width - 1, 0)
+    m_virtualCursorPos = {m_consoleSize.width - 1, 0};
+
+    // Clear the entire display and push all the history again.
+    ClearDisplay();
+    std::string historyStr;
+    char *curr = m_bufferHead;
+    while (curr != m_bufferTail)
+    {
+        historyStr += *curr;
+        curr++;
+    }
+    PushString(historyStr);
+    Flush();
 }
 
 #pragma endregion
@@ -99,7 +117,7 @@ void VerticalDisplay::Flush()
             if (!m_flushBitmap->GetBuffer()[x][y])
                 continue;
             // Move cursor.
-            std::cout << MOVE_CURSOR(x * m_lineSpace, y + 1);
+            std::cout << MOVE_CURSOR(x * m_lineSpace + 1, y + 1);
             std::cout << m_charBuffer->GetBuffer()[x][y];
             // Make bitmap cold.
             m_flushBitmap->SetBuffer(x, y, false);
@@ -142,7 +160,7 @@ void VerticalDisplay::PushString(std::string str)
             m_displayHead = m_historyBuffer + (m_displayHead - m_historyBuffer + 1) % k_historyBufferSize;
     }
 
-    // TODO: Append new chars to the buffer to optimize performance.
+    // Append new chars to the buffer to optimize performance.
     if (m_displayLines <= m_consoleSize.width)
     {
         lineCharCount = 0;
@@ -179,7 +197,7 @@ void VerticalDisplay::PushString(std::string str)
         lineCharCount = 1;
     }
 
-    // TODO: Refresh the entire buffer.
+    // Refresh the entire buffer.
     ClearDisplay();
     m_virtualCursorPos = {m_consoleSize.width - 1, 0};
 
