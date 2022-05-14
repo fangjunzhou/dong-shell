@@ -38,6 +38,8 @@ VerticalDisplay::VerticalDisplay(eventpp::CallbackList<void(int width, int heigh
         m_historyBuffer[i] = '\0';
     }
     m_historyLines = 0;
+    m_displayLines = 1;
+    m_lineCharCount = 0;
 }
 
 VerticalDisplay::VerticalDisplay(eventpp::CallbackList<void(int width, int height)> *consoleResizeCallback,
@@ -123,6 +125,8 @@ void VerticalDisplay::Flush()
             m_flushBitmap->SetBuffer(x, y, false);
         }
     }
+    // Move to cursor position
+    std::cout << MOVE_CURSOR(m_virtualCursorPos.x * m_lineSpace + 1, m_virtualCursorPos.y + 1);
 }
 
 void VerticalDisplay::UpdateChar(int x, int y, char val)
@@ -134,12 +138,16 @@ void VerticalDisplay::UpdateChar(int x, int y, char val)
 void VerticalDisplay::PushString(std::string str)
 {
     // The number of char in current line.
-    int lineCharCount = 0;
+    int initLineCharCount = m_lineCharCount;
+    int lineCharCount = m_lineCharCount;
     for (int i = 0; i < str.length(); i++)
     {
         // Count history lines.
         if (*m_bufferTail == '\n')
             m_historyLines--;
+
+        lineCharCount++;
+
         // Start a new line.
         if (str[i] == '\n' || lineCharCount == m_consoleSize.height)
         {
@@ -151,19 +159,18 @@ void VerticalDisplay::PushString(std::string str)
         *m_bufferTail = str[i];
         m_bufferTail = m_historyBuffer + (m_bufferTail - m_historyBuffer + 1) % k_historyBufferSize;
 
-        lineCharCount++;
-
         // Push the buffer head.
         if (m_bufferTail == m_bufferHead)
             m_bufferHead = m_historyBuffer + (m_bufferHead - m_historyBuffer + 1) % k_historyBufferSize;
         if (m_bufferTail == m_displayHead)
             m_displayHead = m_historyBuffer + (m_displayHead - m_historyBuffer + 1) % k_historyBufferSize;
     }
+    m_lineCharCount = lineCharCount;
 
     // Append new chars to the buffer to optimize performance.
     if (m_displayLines <= m_consoleSize.width)
     {
-        lineCharCount = 0;
+        lineCharCount = initLineCharCount;
         for (int i = 0; i < str.length(); i++)
         {
             // Start a new line.

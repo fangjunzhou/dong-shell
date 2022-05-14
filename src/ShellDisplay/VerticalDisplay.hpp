@@ -75,6 +75,12 @@ private:
     int m_displayLines;
 
     /**
+     * @brief The number of character in current line.
+     *
+     */
+    int m_lineCharCount;
+
+    /**
      * @brief The space between two vertical lines.
      *
      */

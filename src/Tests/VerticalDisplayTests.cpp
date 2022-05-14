@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include "VerticalDisplay.hpp"
 
-static bool redirectResult = true;
+static bool redirectResult = false;
 
 int stdoutFd = -1;
 FILE *openedFile = NULL;
@@ -141,6 +141,40 @@ TEST_CASE("VerticalDisplay Resize Console", "[VerticalDisplay]")
     display.PushString("Hello World3!\n");
     display.PushString("Hello World4!\n");
     display.PushString("Hello World5!\n");
+
+    DisplayDebugInfo(11, 0, "Flush()");
+    display.Flush();
+
+    DisplayDebugInfo(21, 0, "Resize Console");
+    consoleResizeCallback(20, 20);
+
+    DisplayDebugInfo(21, 0, "ClearDisplay()");
+    display.ClearDisplay();
+
+    if (redirectResult)
+        ReopenStdout();
+}
+
+TEST_CASE("VerticalDisplay Long Line", "[VerticalDisplay]")
+{
+    if (redirectResult)
+        RedirectTestOutput("../tests_output/VerticalDisplay_Long_Line.txt");
+
+    // Console resize callback.
+    eventpp::CallbackList<void(int width, int height)> consoleResizeCallback;
+
+    std::cout << "\033[2J";
+    VerticalDisplay display = VerticalDisplay(&consoleResizeCallback, {10, 10}, 2);
+
+    DisplayDebugInfo(11, 0, "ClearDisplay()");
+    display.ClearDisplay();
+
+    DisplayDebugInfo(11, 0, "PushString()");
+    display.PushString("Hello World!");
+    display.PushString("Hello World2!");
+    display.PushString("Hello World3!");
+    display.PushString("Hello World4!");
+    display.PushString("Hello World5!");
 
     DisplayDebugInfo(11, 0, "Flush()");
     display.Flush();
