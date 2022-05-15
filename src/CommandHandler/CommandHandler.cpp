@@ -10,6 +10,7 @@ int CommandHandler::HandleCommand(const std::string &command)
 
     if (command == "clear")
     {
+        // TODO: Clear the verticle display.
         std::cout << "\033[2J \033[H";
         return 1;
     }
