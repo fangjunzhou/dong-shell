@@ -173,6 +173,7 @@ void VerticalDisplay::PushString(std::string str)
         lineCharCount = initLineCharCount;
         for (int i = 0; i < str.length(); i++)
         {
+            lineCharCount++;
             // Start a new line.
             if (str[i] == '\n' || lineCharCount == m_consoleSize.height)
             {
@@ -185,7 +186,6 @@ void VerticalDisplay::PushString(std::string str)
             // Update the char.
             UpdateChar(m_virtualCursorPos.x, m_virtualCursorPos.y, str[i]);
             m_virtualCursorPos.y++;
-            lineCharCount++;
         }
         return;
     }
@@ -225,6 +225,95 @@ void VerticalDisplay::PushString(std::string str)
         m_virtualCursorPos.y++;
         lineCharCount++;
     }
+}
+
+void VerticalDisplay::PushChar(char ch)
+{
+    if (ch == '\0')
+        return;
+
+    // The number of char in current line.
+    int initLineCharCount = m_lineCharCount;
+    int lineCharCount = m_lineCharCount;
+    // Count history lines.
+    if (*m_bufferTail == '\n')
+        m_historyLines--;
+
+    lineCharCount++;
+
+    // Start a new line.
+    if (ch == '\n' || lineCharCount >= m_consoleSize.height)
+    {
+        m_historyLines++;
+        m_displayLines++;
+        lineCharCount -= m_consoleSize.height;
+    }
+    // Push the string to the circular buffer and increase the pointer.
+    *m_bufferTail = ch;
+    m_bufferTail = m_historyBuffer + (m_bufferTail - m_historyBuffer + 1) % k_historyBufferSize;
+
+    // Push the buffer head.
+    if (m_bufferTail == m_bufferHead)
+        m_bufferHead = m_historyBuffer + (m_bufferHead - m_historyBuffer + 1) % k_historyBufferSize;
+    if (m_bufferTail == m_displayHead)
+        m_displayHead = m_historyBuffer + (m_displayHead - m_historyBuffer + 1) % k_historyBufferSize;
+    m_lineCharCount = lineCharCount;
+
+    // Append new chars to the buffer to optimize performance.
+    if (m_displayLines <= m_consoleSize.width)
+    {
+        lineCharCount = initLineCharCount + 1;
+        // Start a new line.
+        if (ch == '\n' || lineCharCount == m_consoleSize.height)
+        {
+            m_virtualCursorPos.x--;
+            m_virtualCursorPos.y = 0;
+            lineCharCount = 0;
+        }
+        if (ch == '\n')
+            return;
+        // Update the char.
+        UpdateChar(m_virtualCursorPos.x, m_virtualCursorPos.y, ch);
+        m_virtualCursorPos.y++;
+        return;
+    }
+
+    // The max available display lines should = console width.
+    lineCharCount = 1;
+    while (m_displayLines > m_consoleSize.width)
+    {
+        while (*m_displayHead != '\n' && lineCharCount != m_consoleSize.height)
+        {
+            m_displayHead = m_historyBuffer + (m_displayHead - m_historyBuffer + 1) % k_historyBufferSize;
+            lineCharCount++;
+        }
+        m_displayHead = m_historyBuffer + (m_displayHead - m_historyBuffer + 1) % k_historyBufferSize;
+        m_displayLines--;
+        lineCharCount = 1;
+    }
+
+    // Refresh the entire buffer.
+    ClearDisplay();
+    m_virtualCursorPos = {m_consoleSize.width - 1, 0};
+
+    lineCharCount = 1;
+    // Traverse through displayHead to bufferTail.
+    for (char *ptr = m_displayHead; ptr != m_bufferTail; ptr = m_historyBuffer + (ptr - m_historyBuffer + 1) % k_historyBufferSize)
+    {
+        // Start a new line.
+        if (*ptr == '\n' || lineCharCount == m_consoleSize.height)
+        {
+            m_virtualCursorPos.x--;
+            m_virtualCursorPos.y = 0;
+            lineCharCount = 0;
+            continue;
+        }
+        // Update the char.
+        UpdateChar(m_virtualCursorPos.x, m_virtualCursorPos.y, *ptr);
+        m_virtualCursorPos.y++;
+        lineCharCount++;
+    }
+    m_lineCharCount = lineCharCount;
 }
 
 DisplayBuffer<char> &VerticalDisplay::GetCharBuffer()

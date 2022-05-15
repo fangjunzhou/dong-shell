@@ -152,6 +152,13 @@ public:
     void PushString(std::string str);
 
     /**
+     * @brief Push a character into the buffer.
+     *
+     * @param ch the character received from the isteam.
+     */
+    void PushChar(char ch);
+
+    /**
      * @brief Get the Char Buffer directly.
      *
      * @return DisplayBuffer<char>&

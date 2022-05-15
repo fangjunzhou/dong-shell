@@ -44,7 +44,32 @@ int main(int, char **)
     signal(SIGWINCH, SIGWINCH_Handler);
 
     // Init VerticleDisplay
-    VerticalDisplay display = VerticalDisplay(&terminalResizeCallback, {winSize.ws_col, winSize.ws_row});
+    VerticalDisplay display = VerticalDisplay(&terminalResizeCallback, {winSize.ws_col, winSize.ws_row}, 2);
+
+    // Create pipe
+    int pipeFd[2];
+    pipe(pipeFd);
+
+    pid_t pid = fork();
+    if (pid == 0)
+    {
+        // Display Process
+        std::cout << "\033[2J \033[H";
+        display.ClearDisplay();
+        // Redirect the stdin
+        dup2(pipeFd[0], STDIN_FILENO);
+
+        while (true)
+        {
+            display.PushChar((char)std::cin.get());
+            display.Flush();
+        }
+    }
+    else
+    {
+        // Redirect the stdout
+        dup2(pipeFd[1], STDOUT_FILENO);
+    }
 
     std::string command;
 

@@ -188,3 +188,37 @@ TEST_CASE("VerticalDisplay Long Line", "[VerticalDisplay]")
     if (redirectResult)
         ReopenStdout();
 }
+
+TEST_CASE("VerticalDisplay Push Char", "[VerticalDisplay]")
+{
+    if (redirectResult)
+        RedirectTestOutput("../tests_output/VerticalDisplay_Push_Char.txt");
+
+    // Console resize callback.
+    eventpp::CallbackList<void(int width, int height)> consoleResizeCallback;
+
+    std::cout << "\033[2J";
+    VerticalDisplay display = VerticalDisplay(&consoleResizeCallback, {3, 3}, 1);
+
+    DisplayDebugInfo(11, 0, "ClearDisplay()");
+    display.ClearDisplay();
+
+    DisplayDebugInfo(11, 0, "PushChar()");
+    for (auto &ch : "Hello World!")
+    {
+        display.PushChar(ch);
+    }
+    for (auto &ch : "Hello World2!")
+    {
+        display.PushChar(ch);
+    }
+
+    DisplayDebugInfo(11, 0, "Flush()");
+    display.Flush();
+
+    DisplayDebugInfo(21, 0, "ClearDisplay()");
+    display.ClearDisplay();
+
+    if (redirectResult)
+        ReopenStdout();
+}
