@@ -5,15 +5,19 @@
 #include <algorithm>
 #include <iostream>
 
+#include <unistd.h>
+
 namespace CommandHandler
 {
     /**
      * @brief Process the reserved command.
      *
      * @param command the string command pass to the handler.
+     * @param clearBufferFd the fd value of the clear buffer.
+     * @param displayPid The PID of display process.
      * @return int -1 if fail, 0 if no action, 1 if success.
      */
-    int HandleCommand(const std::string &command);
+    int HandleCommand(const std::string &command, int clearBufferFd, int displayPid);
 
     /**
      * @brief Slip the command based on space and tabs.

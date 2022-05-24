@@ -1,6 +1,6 @@
 #include "CommandHandler.hpp"
 
-int CommandHandler::HandleCommand(const std::string &command)
+int CommandHandler::HandleCommand(const std::string &command, int clearBufferFd, int displayPid)
 {
     // Exit the process
     if (command == "exit")
@@ -11,7 +11,8 @@ int CommandHandler::HandleCommand(const std::string &command)
     if (command == "clear")
     {
         // TODO: Clear the verticle display.
-        std::cout << "\033[2J \033[H";
+        int clearVal = 1;
+        write(clearBufferFd, &clearVal, 1);
         return 1;
     }
 

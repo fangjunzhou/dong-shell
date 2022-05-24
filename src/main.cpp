@@ -2,6 +2,9 @@
 #include <fstream>
 #include <csignal>
 
+#include <ext/stdio_filebuf.h>
+#include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -9,6 +12,8 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <pthread.h>
 
 #include "callbacklist.h"
 
@@ -19,6 +24,12 @@
 struct winsize winSize;
 eventpp::CallbackList<void(int width, int height)> terminalResizeCallback;
 
+// The PID of the display process.
+pid_t displayPid;
+
+// The input fd to send clear command to vertical output.
+int *clearPipeFdWriteEnd;
+
 void SIGWINCH_Handler(int sigNum)
 {
     if (sigNum == SIGWINCH)
@@ -27,6 +38,32 @@ void SIGWINCH_Handler(int sigNum)
 
         // Call the resize callback.
         terminalResizeCallback(winSize.ws_col, winSize.ws_row);
+    }
+}
+
+struct ClearCommandArgv
+{
+    int clearPipeReadFd;
+    VerticalDisplay *verticalDisplay;
+};
+
+void *ClearCommandHandle(void *argv)
+{
+    ClearCommandArgv *clearCommandArgv = (ClearCommandArgv *)argv;
+    // Get the read end of the pipe, and VerticalDisplay obj.
+    int clearPipeFdReadEnd = clearCommandArgv->clearPipeReadFd;
+    VerticalDisplay *verticalDisplay = clearCommandArgv->verticalDisplay;
+
+    // Clear pipe buffer.
+    int clearBuffer;
+
+    while (true)
+    {
+        // Check the clear command pipe.
+        if (read(clearPipeFdReadEnd, &clearBuffer, 1) != 0)
+        {
+            verticalDisplay->ClearDisplay();
+        }
     }
 }
 
@@ -46,18 +83,29 @@ int main(int, char **)
     // Init VerticleDisplay
     VerticalDisplay display = VerticalDisplay(&terminalResizeCallback, {winSize.ws_col, winSize.ws_row}, 2);
 
-    // Create pipe
-    int pipeFd[2];
-    pipe(pipeFd);
+    // Create vertical output pipe.
+    int outputPipeFd[2];
+    pipe(outputPipeFd);
 
-    pid_t pid = fork();
-    if (pid == 0)
+    // Create pipe for clear operation.
+    int clearPipeFd[2];
+    clearPipeFdWriteEnd = clearPipeFd + 1;
+    pipe(clearPipeFd);
+
+    displayPid = fork();
+    if (displayPid == 0)
     {
         // Display Process
         std::cout << "\033[2J \033[H";
         display.ClearDisplay();
         // Redirect the stdin
-        dup2(pipeFd[0], STDIN_FILENO);
+        dup2(outputPipeFd[0], STDIN_FILENO);
+
+        // Start the clear handle thread.
+        pthread_t clearThread;
+
+        ClearCommandArgv argv = {clearPipeFd[0], &display};
+        pthread_create(&clearThread, NULL, ClearCommandHandle, &argv);
 
         while (true)
         {
@@ -68,7 +116,7 @@ int main(int, char **)
     else
     {
         // Redirect the stdout
-        dup2(pipeFd[1], STDOUT_FILENO);
+        dup2(outputPipeFd[1], STDOUT_FILENO);
     }
 
     std::string command;
@@ -80,7 +128,7 @@ int main(int, char **)
         std::cout << "Dong Shell> ";
         std::getline(std::cin, command);
         std::cout << "Command: " << command << std::endl;
-        int res = CommandHandler::HandleCommand(command);
+        int res = CommandHandler::HandleCommand(command, *clearPipeFdWriteEnd, displayPid);
         if (res == -1)
         {
             std::cerr << "CommandHandler error\n";
