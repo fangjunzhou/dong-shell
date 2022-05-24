@@ -35,6 +35,11 @@ enable_testing()
 # Main executable.
 add_executable(DongShell src/main.cpp ${EXT_SOURCES})
 
+# Pthread
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(DongShell PRIVATE Threads::Threads)
+
 # Tests
 FILELIST(TEST_LIST ${CMAKE_CURRENT_SOURCE_DIR}/src/Tests)
 
