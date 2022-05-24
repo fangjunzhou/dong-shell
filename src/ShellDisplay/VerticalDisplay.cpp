@@ -105,6 +105,13 @@ void VerticalDisplay::ClearDisplay()
             UpdateChar(x, y, ' ');
         }
     }
+    // Clear the entire display
+    std::cout << CLEAR_SCR;
+
+    // Move cursor.
+    m_virtualCursorPos.x = m_consoleSize.width - 1;
+    m_virtualCursorPos.y = 0;
+
     Flush();
 }
 
