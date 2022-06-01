@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <termios.h>
 
 #include "callbacklist.h"
 
@@ -24,8 +25,9 @@
 struct winsize winSize;
 eventpp::CallbackList<void(int width, int height)> terminalResizeCallback;
 
-// The PID of the display process.
-pid_t displayPid;
+// The PID of the IO process.
+pid_t outputPid;
+pid_t inputPid;
 
 // The input fd to send clear command to vertical output.
 int *clearPipeFdWriteEnd;
@@ -82,14 +84,17 @@ int main(int, char **)
     int outputPipeFd[2];
     pipe(outputPipeFd);
 
+    int inputPipeFd[2];
+    pipe(inputPipeFd);
+
     // Create pipe for clear operation.
     int clearPipeFd[2];
     clearPipeFdWriteEnd = clearPipeFd + 1;
     pipe(clearPipeFd);
 
-    // Setup display process.
-    displayPid = fork();
-    if (displayPid == 0)
+    // Setup output process.
+    outputPid = fork();
+    if (outputPid == 0)
     {
         // Display Process
         std::cout << "\033[2J \033[H";
@@ -115,13 +120,48 @@ int main(int, char **)
         dup2(outputPipeFd[1], STDOUT_FILENO);
     }
 
+    // Setup input process.
+    inputPid = fork();
+    if (inputPid == 0)
+    {
+        // Input process.
+
+        // Disable the terminal input display.
+        termios oldt;
+        tcgetattr(STDIN_FILENO, &oldt);
+        termios newt = oldt;
+        newt.c_lflag &= ~ECHO;
+        newt.c_lflag &= ~ICANON;
+        tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+        char ch;
+        while (true)
+        {
+            ch = std::cin.get();
+            if (ch != '\0')
+            {
+                // Write the character to the vertical output.
+                write(outputPipeFd[1], &ch, 1);
+                // Send the character to the input pipe.
+                write(inputPipeFd[1], &ch, 1);
+            }
+        }
+    }
+    else
+    {
+        // Redirect the stdin.
+        dup2(inputPipeFd[0], STDIN_FILENO);
+    }
+
+    // Setup input process.
+
     // Print version.
     std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
 
     std::string command;
 
     // TODO: Create CommandHandler obj.
-    CommandHandler commandHandler = CommandHandler(*clearPipeFdWriteEnd, displayPid);
+    CommandHandler commandHandler = CommandHandler(*clearPipeFdWriteEnd, outputPid);
 
     // Main loop.
     while (true)
