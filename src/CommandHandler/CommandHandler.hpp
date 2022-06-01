@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <unistd.h>
+#include "callbacklist.h"
 
 class CommandHandler
 {
@@ -22,14 +23,17 @@ private:
      */
     int m_displayPid;
 
+    eventpp::CallbackList<void()> *m_applicationQuitCallback;
+
 public:
     /**
      * @brief Construct a new Command Handler object
      *
      * @param clearBufferFd The read fd for clear pipe.
      * @param displayPid the PID for display process.
+     * @param applicationQuitCallback callback list to call when exiting the application.
      */
-    CommandHandler(int clearBufferFd, int displayPid);
+    CommandHandler(int clearBufferFd, int displayPid, eventpp::CallbackList<void()> *applicationQuitCallback);
 
     /**
      * @brief Process the reserved command.

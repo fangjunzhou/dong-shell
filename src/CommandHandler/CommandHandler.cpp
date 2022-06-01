@@ -1,9 +1,10 @@
 #include "CommandHandler.hpp"
 
-CommandHandler::CommandHandler(int clearBufferFd, int displayPid)
+CommandHandler::CommandHandler(int clearBufferFd, int displayPid, eventpp::CallbackList<void()> *applicationQuitCallback)
 {
     m_clearBufferFd = clearBufferFd;
     m_displayPid = displayPid;
+    m_applicationQuitCallback = applicationQuitCallback;
 }
 
 int CommandHandler::HandleCommand(const std::string &command)
@@ -11,6 +12,7 @@ int CommandHandler::HandleCommand(const std::string &command)
     // Exit the process
     if (command == "exit")
     {
+        (*m_applicationQuitCallback)();
         exit(0);
     }
 

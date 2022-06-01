@@ -22,16 +22,31 @@
 #include "CommandHandler.hpp"
 #include "VerticalDisplay.hpp"
 
+// Terminal window size related.
 struct winsize winSize;
 eventpp::CallbackList<void(int width, int height)> terminalResizeCallback;
 
+// Exiting event
+eventpp::CallbackList<void()> applicationQuitCallback;
+
 // The PID of the IO process.
-pid_t outputPid;
-pid_t inputPid;
+pid_t outputPid = 0;
+pid_t inputPid = 0;
+// Original stdin and stdout FD
+int stdinFd;
+int stdoutFd;
+
+// Terminal IO status
+termios oldt;
 
 // The input fd to send clear command to vertical output.
 int *clearPipeFdWriteEnd;
 
+/**
+ * @brief Signal handler for window resize signal.
+ *
+ * @param sigNum signal number.
+ */
 void SIGWINCH_Handler(int sigNum)
 {
     if (sigNum == SIGWINCH)
@@ -40,6 +55,34 @@ void SIGWINCH_Handler(int sigNum)
 
         // Call the resize callback.
         terminalResizeCallback(winSize.ws_col, winSize.ws_row);
+    }
+}
+
+void SIGKILL_Handler(int sigNum)
+{
+    if (sigNum == SIGKILL)
+    {
+        std::cout << "DongShell force quit.\n";
+
+        // Reset stdin and stdout
+        dup2(stdoutFd, STDOUT_FILENO);
+        dup2(stdinFd, STDIN_FILENO);
+
+        // Reset terminal IO status
+        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+
+        // Kill child IO processes.
+        if (inputPid != 0)
+        {
+            kill(inputPid, SIGKILL);
+        }
+        if (outputPid != 0)
+        {
+            kill(outputPid, SIGKILL);
+        }
+
+        // Clear the display.
+        std::cout << "\033[2J";
     }
 }
 
@@ -74,7 +117,12 @@ int main(int, char **)
     // Getting the console width and height.
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &winSize);
 
-    // Register SIGWINCH signal
+    // Register SIGKILL signal and event.
+    signal(SIGKILL, SIGKILL_Handler);
+    applicationQuitCallback.append([]()
+                                   { SIGKILL_Handler(SIGKILL); });
+
+    // Register SIGWINCH signal.
     signal(SIGWINCH, SIGWINCH_Handler);
 
     // Init VerticleDisplay
@@ -117,18 +165,19 @@ int main(int, char **)
     else
     {
         // Redirect the stdout
+        stdoutFd = dup(STDOUT_FILENO);
         dup2(outputPipeFd[1], STDOUT_FILENO);
     }
 
     // Setup input process.
     inputPid = fork();
+    // Store the terminal IO status before start the input process.
+    tcgetattr(STDIN_FILENO, &oldt);
     if (inputPid == 0)
     {
         // Input process.
 
         // Disable the terminal input display.
-        termios oldt;
-        tcgetattr(STDIN_FILENO, &oldt);
         termios newt = oldt;
         newt.c_lflag &= ~ECHO;
         newt.c_lflag &= ~ICANON;
@@ -150,6 +199,7 @@ int main(int, char **)
     else
     {
         // Redirect the stdin.
+        stdinFd = dup(STDIN_FILENO);
         dup2(inputPipeFd[0], STDIN_FILENO);
     }
 
@@ -160,8 +210,8 @@ int main(int, char **)
 
     std::string command;
 
-    // TODO: Create CommandHandler obj.
-    CommandHandler commandHandler = CommandHandler(*clearPipeFdWriteEnd, outputPid);
+    // Create CommandHandler obj.
+    CommandHandler commandHandler = CommandHandler(*clearPipeFdWriteEnd, outputPid, &applicationQuitCallback);
 
     // Main loop.
     while (true)
@@ -174,6 +224,7 @@ int main(int, char **)
         if (res == -1)
         {
             std::cerr << "CommandHandler error\n";
+            applicationQuitCallback();
             exit(1);
         }
         else if (res == 1)
@@ -207,6 +258,7 @@ int main(int, char **)
                 }
             }
 
+            applicationQuitCallback();
             exit(0);
         }
         // Wait for child process finished.

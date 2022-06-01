@@ -3,7 +3,7 @@
 
 TEST_CASE("Split Command", "[SplitCommand]")
 {
-    CommandHandler handler = CommandHandler(0, 0);
+    CommandHandler handler = CommandHandler(0, 0, NULL);
 
     SECTION("ls -la")
     {
