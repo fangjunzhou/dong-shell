@@ -7,17 +7,37 @@
 
 #include <unistd.h>
 
-namespace CommandHandler
+class CommandHandler
 {
+private:
+    /**
+     * @brief The read file descriptor for clear buffer pipe.
+     *
+     */
+    int m_clearBufferFd;
+
+    /**
+     * @brief The PID for display process.
+     *
+     */
+    int m_displayPid;
+
+public:
+    /**
+     * @brief Construct a new Command Handler object
+     *
+     * @param clearBufferFd The read fd for clear pipe.
+     * @param displayPid the PID for display process.
+     */
+    CommandHandler(int clearBufferFd, int displayPid);
+
     /**
      * @brief Process the reserved command.
      *
      * @param command the string command pass to the handler.
-     * @param clearBufferFd the fd value of the clear buffer.
-     * @param displayPid The PID of display process.
      * @return int -1 if fail, 0 if no action, 1 if success.
      */
-    int HandleCommand(const std::string &command, int clearBufferFd, int displayPid);
+    int HandleCommand(const std::string &command);
 
     /**
      * @brief Slip the command based on space and tabs.
@@ -38,6 +58,6 @@ namespace CommandHandler
      */
     void DebugCommandList(std::string *command, std::vector<std::string> *commandList,
                           char *const *argv, int argc);
-}
+};
 
 #endif // __COMMANDHANDLER_H__

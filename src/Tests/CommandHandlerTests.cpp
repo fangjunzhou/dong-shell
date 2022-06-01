@@ -3,9 +3,11 @@
 
 TEST_CASE("Split Command", "[SplitCommand]")
 {
+    CommandHandler handler = CommandHandler(0, 0);
+
     SECTION("ls -la")
     {
-        std::vector<std::string> &res = CommandHandler::SplitCommand("ls -la");
+        std::vector<std::string> &res = handler.SplitCommand("ls -la");
         REQUIRE(res.size() == 2);
         REQUIRE(res[0] == "ls");
         REQUIRE(res[1] == "-la");
@@ -13,7 +15,7 @@ TEST_CASE("Split Command", "[SplitCommand]")
 
     SECTION("ls\t-la")
     {
-        std::vector<std::string> &res = CommandHandler::SplitCommand("ls\t-la");
+        std::vector<std::string> &res = handler.SplitCommand("ls\t-la");
         REQUIRE(res.size() == 2);
         REQUIRE(res[0] == "ls");
         REQUIRE(res[1] == "-la");
@@ -21,7 +23,7 @@ TEST_CASE("Split Command", "[SplitCommand]")
 
     SECTION("ls \t-la")
     {
-        std::vector<std::string> &res = CommandHandler::SplitCommand("ls \t-la");
+        std::vector<std::string> &res = handler.SplitCommand("ls \t-la");
         REQUIRE(res.size() == 2);
         REQUIRE(res[0] == "ls");
         REQUIRE(res[1] == "-la");
@@ -29,7 +31,7 @@ TEST_CASE("Split Command", "[SplitCommand]")
 
     SECTION("ls -la ")
     {
-        std::vector<std::string> &res = CommandHandler::SplitCommand("ls -la ");
+        std::vector<std::string> &res = handler.SplitCommand("ls -la ");
         REQUIRE(res.size() == 2);
         REQUIRE(res[0] == "ls");
         REQUIRE(res[1] == "-la");
@@ -37,7 +39,7 @@ TEST_CASE("Split Command", "[SplitCommand]")
 
     SECTION(" ls -la")
     {
-        std::vector<std::string> &res = CommandHandler::SplitCommand(" ls -la");
+        std::vector<std::string> &res = handler.SplitCommand(" ls -la");
         REQUIRE(res.size() == 2);
         REQUIRE(res[0] == "ls");
         REQUIRE(res[1] == "-la");
@@ -45,7 +47,7 @@ TEST_CASE("Split Command", "[SplitCommand]")
 
     SECTION("\tls -la")
     {
-        std::vector<std::string> &res = CommandHandler::SplitCommand("\tls -la");
+        std::vector<std::string> &res = handler.SplitCommand("\tls -la");
         REQUIRE(res.size() == 2);
         REQUIRE(res[0] == "ls");
         REQUIRE(res[1] == "-la");

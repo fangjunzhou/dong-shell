@@ -87,6 +87,7 @@ int main(int, char **)
     clearPipeFdWriteEnd = clearPipeFd + 1;
     pipe(clearPipeFd);
 
+    // Setup display process.
     displayPid = fork();
     if (displayPid == 0)
     {
@@ -119,6 +120,9 @@ int main(int, char **)
 
     std::string command;
 
+    // TODO: Create CommandHandler obj.
+    CommandHandler commandHandler = CommandHandler(*clearPipeFdWriteEnd, displayPid);
+
     // Main loop.
     while (true)
     {
@@ -126,7 +130,7 @@ int main(int, char **)
         std::cout << "Dong Shell> ";
         std::getline(std::cin, command);
         std::cout << "Command: " << command << std::endl;
-        int res = CommandHandler::HandleCommand(command, *clearPipeFdWriteEnd, displayPid);
+        int res = commandHandler.HandleCommand(command);
         if (res == -1)
         {
             std::cerr << "CommandHandler error\n";
@@ -138,7 +142,7 @@ int main(int, char **)
         }
 
         // Split the command.
-        std::vector<std::string> &commandList = CommandHandler::SplitCommand(command);
+        std::vector<std::string> &commandList = commandHandler.SplitCommand(command);
 
         // Fork a new process and execute the target execuatble.
         pid_t pid = fork();
@@ -153,7 +157,7 @@ int main(int, char **)
             }
             argv[commandList.size()] = NULL;
 
-            CommandHandler::DebugCommandList(&command, &commandList, argv, commandList.size());
+            commandHandler.DebugCommandList(&command, &commandList, argv, commandList.size());
 
             if (commandList.size() > 0)
             {
