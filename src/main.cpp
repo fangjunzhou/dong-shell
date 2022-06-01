@@ -69,13 +69,8 @@ void *ClearCommandHandle(void *argv)
 
 int main(int, char **)
 {
-    // Print version.
-    std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
-
     // Getting the console width and height.
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &winSize);
-    std::cout << "Width: " << winSize.ws_col << std::endl;
-    std::cout << "Height: " << winSize.ws_row << std::endl;
 
     // Register SIGWINCH signal
     signal(SIGWINCH, SIGWINCH_Handler);
@@ -118,6 +113,9 @@ int main(int, char **)
         // Redirect the stdout
         dup2(outputPipeFd[1], STDOUT_FILENO);
     }
+
+    // Print version.
+    std::cout << PROJECT_NAME << " v" << PROJECT_VER << std::endl;
 
     std::string command;
 
